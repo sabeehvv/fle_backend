@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/',include('fle_user.urls')),
     path('api/admin/',include('fle_admin.urls')),
     path('api/events/',include('fle_events.urls')),
+    path('api/home/',include('fle_home.urls')),
 ]+ static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

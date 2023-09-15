@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'fle_user',
     'fle_admin',
     'fle_events',
+    'fle_home',
 ]
 
 

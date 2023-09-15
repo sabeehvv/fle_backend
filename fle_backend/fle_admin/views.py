@@ -17,6 +17,11 @@ from rest_framework.exceptions import APIException, NotFound
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.utils.timezone import now
+from fle_home.models import LandingPage,EventHighlight
+from fle_home.serializers import EventHighlightSerializer,LandingPageSerializer
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 # Create your views here.
 
@@ -97,3 +102,87 @@ class AdminViewEventManage(APIView):
         })
 
 
+
+class LandingPageUpdate(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsSuperuser]
+
+    def patch(self, request):
+        print("hello start")
+        try:
+            landing_page = LandingPage.objects.get(pk=1)
+            print("hello done pk")
+        except LandingPage.DoesNotExist:
+            return Response({"error": "LandingPage not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if "video_url" in request.data:
+            print("hello video url")
+            video_url = request.data["video_url"]
+            if not self.is_valid_url(video_url):
+                return Response({"error": "Invalid video URL"}, status=status.HTTP_400_BAD_REQUEST)
+            landing_page.video_url = video_url
+
+        if "announcement" in request.data:
+            landing_page.announcement_text = request.data["announcement"]
+
+        landing_page.save()
+        return Response({"message": "Updated successfully"})
+
+    def is_valid_url(self, url):
+        validator = URLValidator()
+        try:
+            validator(url)
+            return True
+        except ValidationError:
+            return False
+        
+
+    def get(self, request):
+        try:
+            landing_page = LandingPage.objects.get(pk=1)
+        except LandingPage.DoesNotExist:
+            return Response({"error": "LandingPage not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LandingPageSerializer(landing_page)
+        return Response(serializer.data)
+        
+
+class AdminEventHighlight(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsSuperuser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request):
+        pk = request.data.get("position")
+        heading = request.data.get("heading", "")
+        description = request.data.get("description", "")
+        image = request.data.get("image", None)
+
+        if pk is not None and EventHighlight.objects.filter(pk=pk).exists():
+            return Response({"error": f"EventHighlight with PK {pk} already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        event_highlight = EventHighlight(
+            pk = pk,
+            heading=heading,
+            description=description,
+            image=image
+        )
+        event_highlight.save()
+        print(pk,"pk number where")
+        return Response({"message": "EventHighlight created successfully"}, status=status.HTTP_201_CREATED)
+    
+
+    def delete(self, request, pk):
+        try:
+            event_highlight = EventHighlight.objects.get(pk=pk)
+            event_highlight.delete()
+            return Response({"message": "EventHighlight deleted successfully."}, status=status.HTTP_200_OK)
+        except EventHighlight.DoesNotExist:
+            return Response({"error": f"EventHighlight with PK {pk} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        
+    
+    def get(self, request):
+        event_highlights = EventHighlight.objects.all().order_by('pk')
+        serializer = EventHighlightSerializer(event_highlights, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
