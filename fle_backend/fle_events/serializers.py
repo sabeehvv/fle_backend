@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event,Crowdfunding
+from .models import Event,Crowdfunding,Participant
 
 
 
@@ -61,6 +61,27 @@ class EventsViewSerializer(serializers.ModelSerializer):
             fields = '__all__'
 
 
+class ParticipantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participant
+        fields = ('bringing_members', 'registration_date', 'rsvp_status') 
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if data['rsvp_status'] == 'Waiting':
+            waiting_position = self.calculate_waiting_position(instance)
+            data['waiting_position'] = waiting_position
+        return data
+
+    def calculate_waiting_position(self, instance):
+        event = instance.event
+        registration_date = instance.registration_date
+        waiting_participants = Participant.objects.filter(
+            event=event,
+            rsvp_status='Waiting',
+            registration_date__lt=registration_date
+        ).count()
+        return waiting_participants + 1
 
 
 

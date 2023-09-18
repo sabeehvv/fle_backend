@@ -7,8 +7,8 @@ from fle_user.permission import IsUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from .models import Event, Crowdfunding,FundContributor
-from .serializers import EventSerializer,CrowdfundingSerializer,EventsViewSerializer
+from .models import Event, Crowdfunding,FundContributor,Participant
+from .serializers import EventSerializer,CrowdfundingSerializer,EventsViewSerializer,ParticipantSerializer
 from datetime import datetime
 import razorpay
 from django.conf import settings
@@ -65,9 +65,26 @@ class UserViewEvenDetail(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
     def get(self,request,event_id):
-        event = Event.objects.get(id = event_id)
+        user = request.user
+        try:
+            event = Event.objects.get(id=event_id)
+        except Event.DoesNotExist:
+            return Response({"error": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
         Eventseialize = EventsViewSerializer(event)
-        return Response(Eventseialize.data)
+
+        try:
+            participant = Participant.objects.get(event=event, user=user)
+        except Participant.DoesNotExist:
+            participant = None
+
+        if participant:
+            participant_serializer = ParticipantSerializer(participant)
+        else:
+            participant_serializer = None
+        if participant_serializer:
+            participant = participant_serializer.data
+
+        return Response({"event":Eventseialize.data ,"participant":participant})
     
     
 
@@ -125,3 +142,64 @@ class VerifySignatureView(APIView):
             
             return Response({'status': 'Payment Successful'})
         return Response({'status': 'Payment Failed'})
+    
+
+
+class EventJoinView(APIView):
+    def post(self, request):
+        event_id = request.data.get('event_id')
+        bringing_members = request.data.get('bringing_members')
+        
+        try:
+            event = Event.objects.get(pk=event_id)
+        except Event.DoesNotExist:
+            return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if event.current_participants >= event.maximum_participants:
+            participant, _ = Participant.objects.get_or_create(
+            event=event,
+            user=request.user,
+            )
+            participant.rsvp_status = 'Waiting'
+            participant.save()
+            return Response({'message': 'You are in Waiting List /n Event is full.'})
+        
+        participant, _ = Participant.objects.get_or_create(
+            event=event,
+            user=request.user,
+        )
+        participant.bringing_members = bringing_members
+        participant.rsvp_status = 'Going'
+        participant.save()
+        event.current_participants += bringing_members + 1
+        event.save()
+        print(event.current_participants,'currenct members')
+
+        return Response({'message': 'Join to Event successfully'}, status=status.HTTP_201_CREATED)
+    
+    def delete(self, request, event_id):
+        user = request.user
+        try:
+            event = Event.objects.get(pk=event_id)
+            participant = Participant.objects.get(event=event,user=user)
+        except Event.DoesNotExist:
+            return Response({'error': 'Event or participant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        members = participant.bringing_members + 1
+        rsvp_status = participant.rsvp_status
+        participant.delete()
+
+        if rsvp_status == "Going":
+            event.current_participants -= members
+            event.save()
+
+        waiting_participants = Participant.objects.filter(event=event, rsvp_status='Waiting').order_by("registration_date")
+        while event.current_participants < event.maximum_participants and waiting_participants:
+            waiting_participant = waiting_participants.first()
+            waiting_participant.rsvp_status = 'Going'
+            waiting_participant.save()
+            event.current_participants += 1
+            waiting_participants = waiting_participants.exclude(pk=waiting_participant.pk)
+            event.save()
+
+        return Response({'message': 'Registration canceled'}, status=status.HTTP_204_NO_CONTENT)

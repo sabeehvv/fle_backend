@@ -8,4 +8,6 @@ urlpatterns = [
      path('eventlist/detail/<str:event_id>/',views.UserViewEvenDetail.as_view(),name='detailss'),
      path('contributon/',views.ContributonView.as_view(),name='contributon'),
      path('verifySignature/',views.VerifySignatureView.as_view(),name='verifySignature'),
+     path('join_to_event/',views.EventJoinView.as_view(),name='join_to_event'),
+     path('delete_join_to_event/<str:event_id>/',views.EventJoinView.as_view(),name='delete_join_to_event'),
 ]

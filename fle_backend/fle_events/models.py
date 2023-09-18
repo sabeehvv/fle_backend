@@ -45,3 +45,17 @@ class FundContributor(models.Model):
     
     def __str__(self):
         return f"Contribution by {self.contributor_display_name} to {self.crowdfund_id.event.event_name}"
+    
+
+
+class Participant(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    bringing_members = models.PositiveIntegerField(default=0)
+    registration_date = models.DateTimeField(auto_now_add=True)
+    RSVP_CHOICES = [
+        ('Going', 'Going'),
+        ('Not Going', 'Not Going'),
+        ('Waiting', 'Waiting'),
+    ]
+    rsvp_status = models.CharField(max_length=20, choices=RSVP_CHOICES, default='Not Going')
