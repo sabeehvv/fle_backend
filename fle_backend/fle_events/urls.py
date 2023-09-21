@@ -10,4 +10,5 @@ urlpatterns = [
      path('verifySignature/',views.VerifySignatureView.as_view(),name='verifySignature'),
      path('join_to_event/',views.EventJoinView.as_view(),name='join_to_event'),
      path('delete_join_to_event/<str:event_id>/',views.EventJoinView.as_view(),name='delete_join_to_event'),
+     path('edit_event/<str:event_id>/',views.create_event.as_view(),name='edit_event'),
 ]

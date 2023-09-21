@@ -51,6 +51,37 @@ class create_event(APIView):
             return Response(event_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
+    def patch(self, request, event_id):
+        try:
+            event = Event.objects.get(id=event_id)
+        except Event.DoesNotExist:
+            return Response({"error": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
+        print(request.data)
+
+        date_and_time = request.data.get('date_and_time')
+        if date_and_time != 'null':
+            event.date_and_time = date_and_time
+        image = request.data.get('image')
+        if image != 'null':
+            event.image = image
+        event.event_name = request.data.get('event_name')
+        event.description = request.data.get('description')
+        event.venue = request.data.get('venue')
+        event.maximum_participants = request.data.get('maximum_participants')
+        event.save()
+
+        waiting_participants = Participant.objects.filter(event=event, rsvp_status='Waiting').order_by("registration_date")
+        while event.current_participants < int(event.maximum_participants) and waiting_participants:
+            waiting_participant = waiting_participants.first()
+            waiting_participant.rsvp_status = 'Going'
+            waiting_participant.save()
+            event.current_participants += 1
+            waiting_participants = waiting_participants.exclude(pk=waiting_participant.pk)
+            event.save()
+
+        return Response({'message': 'Event updated successfully'}, status=status.HTTP_200_OK)
+    
+
 class UserViewEventManage(APIView):
     def get(self, request):
         print('hello  event')
@@ -162,7 +193,7 @@ class EventJoinView(APIView):
             )
             participant.rsvp_status = 'Waiting'
             participant.save()
-            return Response({'message': 'You are in Waiting List /n Event is full.'})
+            return Response({'message': 'Added into Waiting List, Event is full.'})
         
         participant, _ = Participant.objects.get_or_create(
             event=event,
@@ -202,4 +233,4 @@ class EventJoinView(APIView):
             waiting_participants = waiting_participants.exclude(pk=waiting_participant.pk)
             event.save()
 
-        return Response({'message': 'Registration canceled'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'Registration canceled'}, status=status.HTTP_200_OK)

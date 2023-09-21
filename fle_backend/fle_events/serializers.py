@@ -40,7 +40,10 @@ class EventsViewSerializer(serializers.ModelSerializer):
 
     def get_hosting_by(self, instance):
         user = instance.hosting_by
-        return user.first_name
+        return {
+            'user_id': user.id,
+            'first_name': user.first_name,
+        }
 
 
     def to_representation(self, instance):
@@ -55,10 +58,7 @@ class EventsViewSerializer(serializers.ModelSerializer):
         return data
     
 
-    class EventsUpdateSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Event
-            fields = '__all__'
+
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
