@@ -1,27 +1,5 @@
 from rest_framework import serializers
-from .models import Event,Crowdfunding,Participant
-
-
-
-class EventSerializer(serializers.ModelSerializer):
-
-    date_and_time = serializers.DateTimeField(input_formats=['%Y-%m-%dT%H:%M:%S.%fZ'])
-
-
-    hosting_by = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        default=serializers.CurrentUserDefault()
-    )
-    
-    class Meta:
-        model = Event
-        fields = '__all__'
-        extra_kwargs = {'hosting_by': {'required': False}}
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['hosting_by'] = user
-        return super().create(validated_data)
+from .models import Event, Crowdfunding, Participant
 
 
 class CrowdfundingSerializer(serializers.ModelSerializer):
@@ -30,8 +8,34 @@ class CrowdfundingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class EventsViewSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
+    hosting_by = serializers.HiddenField(
+        default=serializers.CurrentUserDefault())
 
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+    def create(self, validated_data):
+        event = Event.objects.create(**validated_data)
+        crowdfunding_event = validated_data.get('crowdfunding_event')
+        if crowdfunding_event:
+            crowdfunding_data = {
+                'event': event.id,
+                'target_amount': self.initial_data.get('target_amount', None),
+                'end_date': validated_data.get('date_and_time'),
+            }
+            crowdfunding_serializer = CrowdfundingSerializer(
+                data=crowdfunding_data)
+            if crowdfunding_serializer.is_valid():
+                crowdfunding_serializer.save()
+            else:
+                errors = crowdfunding_serializer.errors
+                print(errors, "error")
+        return event
+
+
+class EventsViewSerializer(serializers.ModelSerializer):
     hosting_by = serializers.SerializerMethodField()
 
     class Meta:
@@ -45,7 +49,6 @@ class EventsViewSerializer(serializers.ModelSerializer):
             'first_name': user.first_name,
         }
 
-
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if instance.crowdfunding_event:
@@ -56,15 +59,12 @@ class EventsViewSerializer(serializers.ModelSerializer):
             except Crowdfunding.DoesNotExist:
                 pass
         return data
-    
-
-
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
-        fields = ('bringing_members', 'registration_date', 'rsvp_status') 
+        fields = ('bringing_members', 'registration_date', 'rsvp_status')
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -82,7 +82,3 @@ class ParticipantSerializer(serializers.ModelSerializer):
             registration_date__lt=registration_date
         ).count()
         return waiting_participants + 1
-
-
-
-
