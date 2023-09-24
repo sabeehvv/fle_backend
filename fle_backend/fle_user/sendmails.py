@@ -33,3 +33,16 @@ def send_event_approve_mail(user, event):
               recipient_list, html_message=html_message)
     print('true inside function')
     return True
+
+
+def send_contribution_email(user, event):
+
+    email = 'sabeehelv@gmail.com' or user.email
+    subject = 'Thank you for contributing to the event!'
+    html_message = render_to_string('comtribution_mail.html', {'user': user, 'event': event})
+    plain_message = strip_tags(html_message)
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+
+    send_mail(subject, plain_message, email_from,
+              recipient_list, html_message=html_message)

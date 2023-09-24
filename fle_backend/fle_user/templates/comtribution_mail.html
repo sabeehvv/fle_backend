@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contribution Appreciation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            max-width: 100px;
+            height: auto;
+            vertical-align: middle; /* Align the logo vertically with the text */
+        }
+
+        .appreciation {
+            text-align: left; /* Align text to the left */
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .org-name {
+            color: #efefef;
+            font-size: 45px;
+            font-weight: bold;
+            padding-bottom: 2px;
+        }
+
+        .message {
+            font-size: 16px;
+            text-align: left; /* Align text to the left */
+            margin-bottom: 30px;
+        }
+
+        .event-info {
+            font-size: 18px;
+            text-align: left; /* Align text to the left */
+            margin-bottom: 20px;
+        }
+
+        .benefits {
+            font-size: 18px;
+            text-align: left; /* Align text to the left */
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #777777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: inline-block; vertical-align: middle; background: linear-gradient(90deg, #84a242 50%, #a670a7 50%);">
+                <img src="https://res.cloudinary.com/dloscr748/image/upload/v1695574030/icon_qiympa.png" alt="FLE Logo" class="logo">
+                <div class="org-name">
+                    FLE
+                </div>
+            </div>
+        </div>
+
+        <div class="appreciation">
+            Thank You, {{ user.first_name }}!
+        </div>
+
+        <div class="message">
+            Your contribution to our inclusive event is invaluable and has a positive impact on both you and our
+            organization.
+        </div>
+        <div class="event-info">
+            You've contributed to the event "{{ event.event_name }}" on {{ event.date_and_time }}.
+        </div>
+        <div class="benefits">
+            By contributing, you help create a more inclusive and vibrant community. We appreciate your support in
+            making our shared vision a reality.
+        </div>
+        <div class="footer">
+            &copy; 2023 FLE. All rights reserved.
+        </div>
+    </div>
+</body>
+
+</html>

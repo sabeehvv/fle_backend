@@ -16,7 +16,8 @@ from .serializers import EventSerializer, EventsViewSerializer, ParticipantSeria
 # Third-party libraries
 import razorpay
 
-# Custom mixins
+# Custom mixins and sendmails
+from fle_user.sendmails import send_contribution_email
 from .mixin import AuthenticationMixin, PromoteParticipantsMixin
 
 
@@ -166,7 +167,8 @@ class VerifySignatureView(APIView):
                 user_id=user,
                 UPI_ID=data.get('UPI_ID', ''),)
             fund_contributor.save()
+            if user:
+                send_contribution_email(user, event)
             print(fund_contributor, 'contributor')
-
             return Response({'status': 'Payment Successful'})
         return Response({'status': 'Payment Failed'})
