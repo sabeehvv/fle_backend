@@ -1,5 +1,7 @@
 # Django Utilities
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from datetime import timedelta
 
 # Django Rest Framework
 from rest_framework.views import APIView
@@ -11,10 +13,11 @@ from rest_framework.generics import UpdateAPIView, RetrieveAPIView, CreateAPIVie
 # Models and Serializers
 from fle_user.models import Account
 from fle_user.serializers import UserSerializer, UserViewSerializer
-from fle_events.models import Event
+from fle_events.models import Event,FundContributor
 from fle_events.serializers import EventsViewSerializer
 from fle_home.models import LandingPage, EventHighlight
 from fle_home.serializers import EventHighlightSerializer, LandingPageSerializer
+from .serializers import EventsDataSerializer,UserDataSerializer
 
 
 # Custom mixins and sendmails
@@ -100,3 +103,21 @@ class AdminViewEventManage(AuthenticationMixin, APIView):
         return Response({
             'status': 400,
         })
+
+
+class UserDataAPIView(APIView):
+    def get(self, request):
+        one_week_ago = timezone.now() - timedelta(days=7)
+
+        user_data = {
+            'total_users': Account.objects.count(),
+            'new_users_count': Account.objects.filter(date_joined__gte=one_week_ago).count(),
+            'active_users': Account.objects.filter(last_login__gte=one_week_ago).count(),
+            'total_events': Event.objects.count(),
+            'Total_Contributions' : FundContributor.objects.count(),
+        }
+        
+        userserializer = UserDataSerializer(user_data)
+        events = Event.objects.all()
+        eventsserializer = EventsDataSerializer(events, many=True)
+        return Response({'user':userserializer.data,"events":eventsserializer.data}, status=status.HTTP_200_OK)

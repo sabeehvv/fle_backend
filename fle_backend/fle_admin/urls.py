@@ -11,5 +11,6 @@ urlpatterns = [
      path('landing-page-View/',views.LandingPageView.as_view(),name='landing-page-View'),
      path('EventHighlight/',views.AdminEventHighlight.as_view(),name='EventHighlight'),
      path('EventHighlight-create/',views.EventHighlightCreateView.as_view(),name='EventHighlight-create'),
-     path('EventHighlight-delete/<int:pk>/',views.EventHighlightDeleteView.as_view(),name='EventHighlight-delete'),  
+     path('EventHighlight-delete/<int:pk>/',views.EventHighlightDeleteView.as_view(),name='EventHighlight-delete'),
+     path('dashboardData/',views.UserDataAPIView.as_view(),name='dashboardData'),
 ]
