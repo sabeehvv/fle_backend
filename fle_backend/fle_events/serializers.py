@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, Crowdfunding, Participant
+from .models import Event, Crowdfunding, Participant, FundContributor
 
 
 class CrowdfundingSerializer(serializers.ModelSerializer):
@@ -82,3 +82,23 @@ class ParticipantSerializer(serializers.ModelSerializer):
             registration_date__lt=registration_date
         ).count()
         return waiting_participants + 1
+
+
+class FundContributorViewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FundContributor
+        fields = ['id', 'contributor_display_name',
+                  'contribution_amount', 'contribution_date']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        crowdfund = instance.crowdfund_id
+        event = crowdfund.event
+
+        data['event_name'] = event.event_name
+        data['date_and_time'] = event.date_and_time
+        data['venue'] = event.venue
+
+        return data

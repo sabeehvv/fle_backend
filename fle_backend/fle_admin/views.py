@@ -13,11 +13,11 @@ from rest_framework.generics import UpdateAPIView, RetrieveAPIView, CreateAPIVie
 # Models and Serializers
 from fle_user.models import Account
 from fle_user.serializers import UserSerializer, UserViewSerializer
-from fle_events.models import Event,FundContributor
+from fle_events.models import Event, FundContributor
 from fle_events.serializers import EventsViewSerializer
-from fle_home.models import LandingPage, EventHighlight
+from fle_home.models import LandingPage, EventHighlight, Volunteers
 from fle_home.serializers import EventHighlightSerializer, LandingPageSerializer
-from .serializers import EventsDataSerializer,UserDataSerializer
+from .serializers import EventsDataSerializer, UserDataSerializer, VolunteerSerializer, UserVolunteerSerializer
 
 
 # Custom mixins and sendmails
@@ -57,6 +57,27 @@ class AdminEventHighlight(AuthenticationMixin, APIView):
         event_highlights = EventHighlight.objects.all().order_by('pk')
         serializer = EventHighlightSerializer(event_highlights, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class VolunteerCreateView(AuthenticationMixin, CreateAPIView):
+    queryset = Volunteers.objects.all()
+    serializer_class = VolunteerSerializer
+
+
+class VolunteerDeleteView(AuthenticationMixin, DestroyAPIView):
+    queryset = Volunteers.objects.all()
+    serializer_class = VolunteerSerializer
+
+
+class VolunteersView(AuthenticationMixin, APIView):
+
+    def get(self, request):
+        Volunteerlist = Volunteers.objects.all().order_by('pk')
+        Users = Account.objects.filter(is_superuser=False).order_by('pk')
+        Vserializer = VolunteerSerializer(Volunteerlist, many=True)
+        Userializer = UserVolunteerSerializer(Users, many=True)
+        data = {'Volunteers': Vserializer.data, 'users': Userializer.data}
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class AdminViewUserManage(AuthenticationMixin, APIView):
@@ -114,10 +135,10 @@ class UserDataAPIView(APIView):
             'new_users_count': Account.objects.filter(date_joined__gte=one_week_ago).count(),
             'active_users': Account.objects.filter(last_login__gte=one_week_ago).count(),
             'total_events': Event.objects.count(),
-            'Total_Contributions' : FundContributor.objects.count(),
+            'Total_Contributions': FundContributor.objects.count(),
         }
-        
+
         userserializer = UserDataSerializer(user_data)
         events = Event.objects.all()
         eventsserializer = EventsDataSerializer(events, many=True)
-        return Response({'user':userserializer.data,"events":eventsserializer.data}, status=status.HTTP_200_OK)
+        return Response({'user': userserializer.data, "events": eventsserializer.data}, status=status.HTTP_200_OK)

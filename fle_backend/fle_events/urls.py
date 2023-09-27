@@ -11,4 +11,5 @@ urlpatterns = [
      path('join_to_event/',views.EventJoinView.as_view(),name='join_to_event'),
      path('delete_join_to_event/<str:event_id>/',views.DeleteJoinView.as_view(),name='delete_join_to_event'),
      path('edit_event/<uuid:pk>/',views.EventUpdateAPIView.as_view(),name='edit_event'),
+     path('Contributors/',views.ContributorsView.as_view(),name='Contributors'),
 ]

@@ -1,6 +1,6 @@
 # Models and Serializers
-from .models import EventHighlight, LandingPage
-from .serializers import LandingPageSerializer, EventHighlightSerializer
+from .models import EventHighlight, LandingPage, Volunteers
+from .serializers import LandingPageSerializer, EventHighlightSerializer, VolunteerViewSerializer
 
 # Django Rest Framework
 from rest_framework.response import Response
@@ -25,3 +25,11 @@ class EventHighlightView(APIView):
         event_highlights = EventHighlight.objects.all().order_by('pk')
         serializer = EventHighlightSerializer(event_highlights, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class VolunteersView(APIView):
+
+    def get(self, request):
+        Volunteerlist = Volunteers.objects.all().order_by('pk')
+        Vserializer = VolunteerViewSerializer(Volunteerlist, many=True)
+        return Response(Vserializer.data, status=status.HTTP_200_OK)

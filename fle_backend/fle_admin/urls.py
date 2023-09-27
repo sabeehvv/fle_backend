@@ -13,4 +13,7 @@ urlpatterns = [
      path('EventHighlight-create/',views.EventHighlightCreateView.as_view(),name='EventHighlight-create'),
      path('EventHighlight-delete/<int:pk>/',views.EventHighlightDeleteView.as_view(),name='EventHighlight-delete'),
      path('dashboardData/',views.UserDataAPIView.as_view(),name='dashboardData'),
+     path('VounteersList/',views.VolunteersView.as_view(),name='VounteersList'),
+     path('Vounteer-create/',views.VolunteerCreateView.as_view(),name='Vounteer-create'),
+     path('Vounteer-delete/<int:pk>/',views.VolunteerDeleteView.as_view(),name='Vounteer-delete'),
 ]

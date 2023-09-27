@@ -11,7 +11,7 @@ from rest_framework.generics import UpdateAPIView, CreateAPIView
 # Models and Serializers
 from fle_user.models import Account
 from .models import Event, Crowdfunding, FundContributor, Participant
-from .serializers import EventSerializer, EventsViewSerializer, ParticipantSerializer
+from .serializers import EventSerializer, EventsViewSerializer, ParticipantSerializer, FundContributorViewSerializer
 
 # Third-party libraries
 import razorpay
@@ -112,6 +112,13 @@ class DeleteJoinView(PromoteParticipantsMixin, AuthenticationMixin, APIView):
         self.promote_waiting_participants(event)
 
         return Response({'message': 'Registration canceled'}, status=status.HTTP_200_OK)
+
+
+class ContributorsView(APIView):
+    def get(self, reqest):
+        Contributors = FundContributor.objects.all().order_by("-contribution_date")
+        serializer = FundContributorViewSerializer(Contributors, many=True)
+        return Response(serializer.data)
 
 
 # crowdfund Payment with razorpay
