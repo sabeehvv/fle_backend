@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'fle_admin',
     'fle_events',
     'fle_home',
+    'chat',
 ]
 
 
@@ -143,7 +145,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fle_backend.wsgi.application'
-ASGI_APPLICATION = "fle_backend.routing.application"
+ASGI_APPLICATION = "fle_backend.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 
 
 # Database
