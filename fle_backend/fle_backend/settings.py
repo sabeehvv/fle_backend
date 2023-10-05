@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
-from decouple import config
+from decouple import config #type:ignore
 
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'fle_events',
     'fle_home',
     'chat',
+    'notification',
 ]
 
 
@@ -258,3 +259,10 @@ LOGGING = {
         'level': 'DEBUG',  # Set to 'DEBUG' to enable debug logging
     },
 }
+
+import firebase_admin #type:ignore
+from firebase_admin import credentials #type:ignore
+
+cred = credentials.Certificate("././flesocial-firebase.json")
+firebase_admin.initialize_app(cred)
+

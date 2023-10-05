@@ -99,7 +99,8 @@ class DeleteJoinView(PromoteParticipantsMixin, AuthenticationMixin, APIView):
     def delete(self, request, event_id):
         user = request.user
         event = get_object_or_404(Event, pk=event_id)
-        participant = get_object_or_404(Participant, event=event, user=user)
+        participant = Participant.objects.filter(event=event, user=user).first()
+        print(participant,'participants')
 
         members = participant.bringing_members + 1
         rsvp_status = participant.rsvp_status

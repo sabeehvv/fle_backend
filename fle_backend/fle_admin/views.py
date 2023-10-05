@@ -23,6 +23,7 @@ from .serializers import EventsDataSerializer, UserDataSerializer, VolunteerSeri
 # Custom mixins and sendmails
 from fle_user.sendmails import send_event_approve_mail
 from .mixin import AuthenticationMixin
+from notification.firebase import send_push_notification
 
 
 class LandingPageView(AuthenticationMixin, RetrieveAPIView):
@@ -118,8 +119,13 @@ class AdminViewEventManage(AuthenticationMixin, APIView):
         else:
             event.event_approved = True
             user = Account.objects.get(email=event.hosting_by)
-            send_event_approve_mail(user, event)
-
+            title = "New Event Added"
+            body = f"New Event Created By {user.first_name}"
+            try:
+                send_event_approve_mail(user, event)
+                send_push_notification(title, body)
+            except:
+                pass
         event.save()
         return Response({
             'status': 400,

@@ -28,4 +28,5 @@ urlpatterns = [
     path('api/events/', include('fle_events.urls')),
     path('api/home/', include('fle_home.urls')),
     path('api/chat/', include('chat.urls')),
+     path('api/notification/', include('notification.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
