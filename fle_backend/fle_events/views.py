@@ -3,10 +3,10 @@ from decimal import Decimal
 # Django and DRF imports
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import UpdateAPIView, CreateAPIView
+from rest_framework.views import APIView #type:ignore
+from rest_framework.response import Response #type:ignore
+from rest_framework import status #type:ignore
+from rest_framework.generics import UpdateAPIView, CreateAPIView #type:ignore
 
 # Models and Serializers
 from fle_user.models import Account
@@ -14,7 +14,7 @@ from .models import Event, Crowdfunding, FundContributor, Participant
 from .serializers import EventSerializer, EventsViewSerializer, ParticipantSerializer, FundContributorViewSerializer
 
 # Third-party libraries
-import razorpay
+import razorpay #type:ignore
 
 # Custom mixins and sendmails
 from fle_user.sendmails import send_contribution_email

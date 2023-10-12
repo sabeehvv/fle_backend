@@ -3,9 +3,9 @@ from .models import EventHighlight, LandingPage, Volunteers
 from .serializers import LandingPageSerializer, EventHighlightSerializer, VolunteerViewSerializer
 
 # Django Rest Framework
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework.response import Response #type:ignore
+from rest_framework import status #type:ignore
+from rest_framework.views import APIView #type:ignore
 
 # Django Utilities
 from django.shortcuts import get_object_or_404

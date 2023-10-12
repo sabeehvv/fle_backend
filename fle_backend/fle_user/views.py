@@ -1,23 +1,23 @@
 from django.shortcuts import render
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.response import Response #type:ignore
+from rest_framework import status #type:ignore
 from .sendmails import send_email_verify
 import uuid
 from .models import Account
-from rest_framework.views import APIView
+from rest_framework.views import APIView #type:ignore
 from .serializers import RegisterSerializer,UserViewSerializer
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed #type:ignore
 from django.utils import timezone
 from .token import get_tokens
 from django.contrib.auth import authenticate
-from rest_framework.permissions import IsAuthenticated
-import requests
+from rest_framework.permissions import IsAuthenticated #type:ignore
+import requests #type:ignore
 from django.core.files.base import ContentFile
 from .permission import IsUser
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated #type:ignore
+from rest_framework_simplejwt.authentication import JWTAuthentication #type:ignore
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
-from rest_framework.generics import UpdateAPIView
+from rest_framework.generics import UpdateAPIView #type:ignore
 
 # Create your views here.
 

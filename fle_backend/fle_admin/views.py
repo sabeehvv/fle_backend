@@ -4,11 +4,11 @@ from django.utils import timezone
 from datetime import timedelta
 
 # Django Rest Framework
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.generics import UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.views import APIView #type:ignore
+from rest_framework.response import Response #type:ignore
+from rest_framework.permissions import IsAuthenticated #type:ignore
+from rest_framework import status #type:ignore
+from rest_framework.generics import UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView #type:ignore
 
 # Models and Serializers
 from fle_user.models import Account

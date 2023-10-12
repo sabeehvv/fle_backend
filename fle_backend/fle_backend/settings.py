@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_cleanup',
+    "django_celery_results",
+    'django_celery_beat',
     'fle_user',
     'fle_admin',
     'fle_events',
@@ -266,3 +268,9 @@ from firebase_admin import credentials #type:ignore
 cred = credentials.Certificate("././flesocial-firebase.json")
 firebase_admin.initialize_app(cred)
 
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Asia/Kolkata'
