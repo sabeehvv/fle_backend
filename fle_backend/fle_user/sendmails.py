@@ -5,7 +5,6 @@ from django.utils.html import strip_tags
 
 
 def send_email_verify(email, token):
-    email = 'sabeehelv@gmail.com'
     subject = 'FLE - Verify your email'
     message = f'Click to verify your email: http://localhost:5173/verify-email/{token}/'
     email_from = settings.EMAIL_HOST_USER
@@ -18,7 +17,7 @@ def send_event_approve_mail(user, event):
 
     message = f' Hi {user.first_name}, Your event "{event.event_name}" has been approved by the admin and is now published.'
     event_url = f'http://localhost:5173/events/eventdetail/{event.id}'
-    email = 'sabeehelv@gmail.com' or user.email
+    email = user.email
 
     subject = 'Your Event Has Been Approved'
     email_from = settings.EMAIL_HOST_USER
@@ -37,7 +36,7 @@ def send_event_approve_mail(user, event):
 
 def send_contribution_email(user, event):
 
-    email = 'sabeehelv@gmail.com' or user.email
+    email = user.email
     subject = 'Thank you for contributing to the event!'
     html_message = render_to_string('comtribution_mail.html', {'user': user, 'event': event})
     plain_message = strip_tags(html_message)
